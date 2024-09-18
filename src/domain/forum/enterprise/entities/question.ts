@@ -1,0 +1,84 @@
+import { Slug } from './value-object/slug'
+import { Entity } from '@/core/entities/entity'
+import type { UniqueEntityId } from '@/core/entities/unique-entity-id'
+import type { Optional } from '@/core/types/optional'
+
+export interface QuestionProps {
+  title: string
+  slug: Slug
+  content: string
+  authorId: UniqueEntityId
+  bestAnswerID?: UniqueEntityId
+  createdAt: Date
+  updatedAt?: Date
+}
+
+export class Question extends Entity<QuestionProps> {
+  get title() {
+    return this.props.title
+  }
+
+  get slug() {
+    return this.props.slug
+  }
+
+  get content() {
+    return this.props.content
+  }
+
+  get authorId() {
+    return this.props.authorId
+  }
+
+  get bestAnswerID() {
+    return this.props.bestAnswerID
+  }
+
+  get createdAt() {
+    return this.props.createdAt
+  }
+
+  get updatedAt() {
+    return this.props.updatedAt
+  }
+
+  private except() {
+    return this.content.substring(0, 120).trimEnd().concat('...')
+  }
+
+  private touch() {
+    this.props.updatedAt = new Date()
+  }
+
+  set title(title: string) {
+    this.props.title = title
+    this.props.slug = Slug.createFormText(title)
+    this.touch()
+  }
+
+  set content(content: string) {
+    this.props.content = content
+    this.touch()
+  }
+
+  set bestAnswerID(bestAnswerID: UniqueEntityId | undefined) {
+    this.props.bestAnswerID = bestAnswerID
+    this.touch()
+  }
+
+  static create(
+    props: Optional<QuestionProps, 'createdAt' | 'slug'>,
+    id?: UniqueEntityId,
+  ) {
+    const question = new Question(
+      {
+        ...props,
+        slug: props.slug ?? Slug.createFormText(props.title),
+        createdAt: props.createdAt ?? new Date(),
+      },
+      id,
+    )
+
+    return question
+  }
+}
