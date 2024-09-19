@@ -53,11 +53,11 @@ describe('Choose Question Best Answer', () => {
 
     await inMemoryAnswersRepository.create(answer)
 
-    expect(async () => {
-      return await sut.execute({
-        answerId: answer.id.toString(),
-        authorId: 'author-02',
-      })
-    }).rejects.toBeInstanceOf(Error)
+    const result = await sut.execute({
+      answerId: answer.id.toString(),
+      authorId: 'author-02',
+    })
+
+    expect(result.isLeft()).toEqual(true)
   })
 })

@@ -30,12 +30,12 @@ describe('Fetch Comments By Question', () => {
       }),
     )
 
-    const { questionComments } = await sut.execute({
+    const { value } = await sut.execute({
       page: 1,
       questionId: 'question-id-01',
     })
 
-    expect(questionComments).toEqual([
+    expect(value?.questionComments).toEqual([
       expect.objectContaining({
         questionId: new UniqueEntityId('question-id-01'),
       }),
@@ -55,11 +55,11 @@ describe('Fetch Comments By Question', () => {
       )
     }
 
-    const { questionComments } = await sut.execute({
+    const { value } = await sut.execute({
       page: 2,
       questionId: 'question-id-01',
     })
 
-    expect(questionComments).toHaveLength(2)
+    expect(value?.questionComments).toHaveLength(2)
   })
 })

@@ -1,5 +1,7 @@
+import type { Question } from '../../enterprise/entities/question'
 import { Slug } from '../../enterprise/entities/value-object/slug'
 import { InMemoryQuestionsRepository } from './../../../../../test/repositories/in-memory-questions-repository'
+import { ResourceNotFoundError } from './errors/resource-not-found-error'
 import { GetQuestionBySlugUseCase } from './get-question-by-slug'
 import { makeQuestion } from 'test/factories/make-question'
 
@@ -21,11 +23,22 @@ describe('Find a Question by Slug', () => {
 
     await inMemoryQuestionsRepository.create(newQuestion)
 
-    const { question } = await sut.execute({
+    const { value } = await sut.execute({
       slug: 'example-question',
     })
 
-    expect(question.id).toBeTruthy()
-    expect(inMemoryQuestionsRepository.items[0].id).toEqual(question.id)
+    expect((value as { question: Question }).question.id).toBeTruthy()
+    expect(inMemoryQuestionsRepository.items[0].id).toEqual(
+      (value as { question: Question }).question.id,
+    )
+  })
+
+  it(' should not be able to get a question by slug that does not exist ', async () => {
+    const result = await sut.execute({
+      slug: 'example-question',
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(ResourceNotFoundError)
   })
 })
