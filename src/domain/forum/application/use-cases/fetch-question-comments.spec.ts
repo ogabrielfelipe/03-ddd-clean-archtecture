@@ -4,18 +4,27 @@ import { makeQuestion } from 'test/factories/make-question'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { FetchQuestionCommentsUseCase } from './fetch-question-comments'
 import { makeQuestionComment } from 'test/factories/make-question-comment'
+import { InMemoryQuestionAttachmentsRepository } from 'test/repositories/in-memory-question-attachments.repository'
 
 let inMemoryQuestionsRepository: InMemoryQuestionsRepository
 let inMemoryQuestionCommentsRepository: InMemoryQuestionCommentsRepository
+
+let inMemoryQuestionAttachmentsRepository: InMemoryQuestionAttachmentsRepository
 
 let sut: FetchQuestionCommentsUseCase
 // system under test
 
 describe('Fetch Comments By Question', () => {
   beforeEach(() => {
+    inMemoryQuestionAttachmentsRepository =
+      new InMemoryQuestionAttachmentsRepository()
+
     inMemoryQuestionCommentsRepository =
       new InMemoryQuestionCommentsRepository()
-    inMemoryQuestionsRepository = new InMemoryQuestionsRepository()
+    inMemoryQuestionsRepository = new InMemoryQuestionsRepository(
+      inMemoryQuestionAttachmentsRepository,
+    )
+
     sut = new FetchQuestionCommentsUseCase(inMemoryQuestionCommentsRepository)
   })
 
